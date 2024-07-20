@@ -83,9 +83,27 @@ janela = SDL_CreateWindow("janela", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEF
                           screen_width, screen_height, SDL_WINDOW_SHOWN);
 
 
-SDL_Delay(3000); // delay
-SDL_DestroyWindow(janela); // destroi a janela
 
+SDL_Event evento;
+bool executando = true;
+
+
+while(executando)
+{
+    while(SDL_PollEvent(&evento))
+    {
+        if(evento.type == SDL_QUIT) // se clicar no x da janela
+        {
+            executando = false; // fecha o programa
+        }
+    }
+
+    SDL_UpdateWindowSurface(janela); // atualiza a janela
+}
+
+
+
+SDL_DestroyWindow(janela); // destroi a janela
 SDL_Quit();
 return 0;
 }
