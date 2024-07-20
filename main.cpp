@@ -70,6 +70,51 @@ class Vector2
 	}
 };
 
+/*
+essa classe representa uma opção de menu
+essa classe não precisa de dependência
+*/
+
+class MenuOption
+{
+private:
+    string text;
+    int x, y;
+public:
+    MenuOption(string text, int x, int y)
+    {
+        this->text = text;
+        this->x = x;
+        this->y = y;
+    }
+
+
+    ~MenuOption(void)
+    {
+
+    }
+
+    string getText()
+    {
+        return text;
+    }
+
+    void setText(string text)
+    {
+        this->text = text;
+    }
+
+    int getXPos()
+    {
+        return x;
+    }
+
+    int getYPos()
+    {
+        return y;
+    }
+};
+
 
 int main(int argc, char *argv[])
 {
