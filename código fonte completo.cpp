@@ -1776,7 +1776,52 @@ private:
     void InputPlayer();
     void InputMenu();
 public:
-    CCore(void);
+
+    CCore(void)
+    {
+        this->quitGame = false;
+        this->iFPS = 0;
+        this->iNumOfFPS = 0;
+        this->lFPSTime = 0;
+        SDL_Init(SDL_INIT_EVERYTHING);
+        janela = SDL_CreateWindow("Super Mario Bros c++", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screen_width, screen_height, SDL_WINDOW_SHOWN);
+
+        if(janela == NULL)
+        {
+            quitGame = true;
+        }
+
+        rR = SDL_CreateRenderer(janela, -1, SDL_RENDERER_ACCELERATED);
+        // ----- ICO
+        SDL_Surface* loadedSurface = SDL_LoadBMP("files/images/ico.bmp");
+        SDL_SetColorKey(loadedSurface, SDL_TRUE, 0xff00ff);
+        SDL_SetWindowIcon(janela, loadedSurface);
+        SDL_FreeSurface(loadedSurface);
+        mainEvent = new SDL_Event();
+        // ----- ICO
+        Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+        oMap = new Map(rR);
+        CCFG::getMM()->setActiveOption(rR);
+        CCFG::getSMBLOGO()->setIMG("super_mario_bros", rR);
+        CCFG::getMusic()->PlayMusic();
+        this->keyMenuPressed = false;
+        this->movePressed = false;
+        this->keyS = this->keyW = false;
+        this->keyA = this->keyD = false;
+        this->keyShift = false;
+        this->keyAPressed = false;
+        this->keyDPressed = false;
+        this->firstDir = false;
+        this->mouseX = 0;
+        this->mouseY = 0;
+        CCFG::keyIDA = SDLK_a;
+        CCFG::keyIDS = SDLK_s;
+        CCFG::keyIDD = SDLK_d;
+        CCFG::keyIDSpace = SDLK_SPACE;
+        CCFG::keyIDShift = SDLK_LSHIFT;
+    }
+
+
     ~CCore(void);
     static bool quitGame;
     void mainLoop();
@@ -2797,41 +2842,7 @@ bool CCore::keyShift = false;
 bool CCore::keyAPressed = false;
 bool CCore::keyDPressed = false;
 
-CCore::CCore(void) {
-    this->quitGame = false;
-    this->iFPS = 0;
-    this->iNumOfFPS = 0;
-    this->lFPSTime = 0;
-    SDL_Init(SDL_INIT_EVERYTHING);
-    janela = SDL_CreateWindow("Super Mario Bros c++", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screen_width, screen_height, SDL_WINDOW_SHOWN);
 
-    if(janela == NULL)
-    {
-        quitGame = true;
-    }
-
-    rR = SDL_CreateRenderer(janela, -1, SDL_RENDERER_ACCELERATED);
-    // ----- ICO
-    SDL_Surface* loadedSurface = SDL_LoadBMP("files/images/ico.bmp");
-    SDL_SetColorKey(loadedSurface, SDL_TRUE, 0xff00ff);
-    SDL_SetWindowIcon(janela, loadedSurface);
-    SDL_FreeSurface(loadedSurface);
-    mainEvent = new SDL_Event();
-    // ----- ICO
-    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
-    oMap = new Map(rR);
-    CCFG::getMM()->setActiveOption(rR);
-    CCFG::getSMBLOGO()->setIMG("super_mario_bros", rR);
-    CCFG::getMusic()->PlayMusic();
-    this->keyMenuPressed = this->movePressed = this->keyS = this->keyW = this->keyA = this->keyD = this->keyShift = false;
-    this->keyAPressed = this->keyDPressed = this->firstDir = false;
-    this->mouseX = this->mouseY = 0;
-    CCFG::keyIDA = SDLK_a;
-    CCFG::keyIDS = SDLK_s;
-    CCFG::keyIDD = SDLK_d;
-    CCFG::keyIDSpace = SDLK_SPACE;
-    CCFG::keyIDShift = SDLK_LSHIFT;
-}
 CCore::~CCore(void)
 {
     delete oMap;
@@ -2936,9 +2947,12 @@ void CCore::InputMenu() {
         }
     }
 }
-void CCore::InputPlayer() {
-    if(mainEvent->type == SDL_WINDOWEVENT) {
-        switch(mainEvent->window.event) {
+void CCore::InputPlayer()
+{
+    if(mainEvent->type == SDL_WINDOWEVENT)
+    {
+        switch(mainEvent->window.event)
+        {
             case SDL_WINDOWEVENT_FOCUS_LOST:
                 CCFG::getMM()->resetActiveOptionID(CCFG::getMM()->ePasue);
                 CCFG::getMM()->setViewID(CCFG::getMM()->ePasue);
@@ -2947,77 +2961,101 @@ void CCore::InputPlayer() {
                 break;
         }
     }
-    if(mainEvent->type == SDL_KEYUP) {
-        if(mainEvent->key.keysym.sym == CCFG::keyIDD) {
-                if(firstDir) {
+    if(mainEvent->type == SDL_KEYUP)
+    {
+        if(mainEvent->key.keysym.sym == CCFG::keyIDD)
+        {
+                if(firstDir)
+                {
                     firstDir = false;
                 }
                 keyDPressed = false;
             }
-            if(mainEvent->key.keysym.sym == CCFG::keyIDS) {
+            if(mainEvent->key.keysym.sym == CCFG::keyIDS)
+            {
                 oMap->getPlayer()->setSquat(false);
                 keyS = false;
             }
-            if(mainEvent->key.keysym.sym == CCFG::keyIDA) {
-                if(!firstDir) {
+            if(mainEvent->key.keysym.sym == CCFG::keyIDA)
+            {
+                if(!firstDir)
+                {
                     firstDir = true;
                 }
                 keyAPressed = false;
             }
-            if(mainEvent->key.keysym.sym == CCFG::keyIDSpace) {
+            if(mainEvent->key.keysym.sym == CCFG::keyIDSpace)
+            {
                 CCFG::keySpace = false;
             }
-            if(mainEvent->key.keysym.sym == CCFG::keyIDShift) {
-                if(keyShift) {
+            if(mainEvent->key.keysym.sym == CCFG::keyIDShift)
+            {
+                if(keyShift)
+                {
                     oMap->getPlayer()->resetRun();
                     keyShift = false;
                 }
             }
-        switch(mainEvent->key.keysym.sym) {
+        switch(mainEvent->key.keysym.sym)
+        {
             case SDLK_KP_ENTER: case SDLK_RETURN: case SDLK_ESCAPE:
                 keyMenuPressed = false;
                 break;
         }
     }
-    if(mainEvent->type == SDL_KEYDOWN) {
-        if(mainEvent->key.keysym.sym == CCFG::keyIDD) {
+    if(mainEvent->type == SDL_KEYDOWN)
+    {
+        if(mainEvent->key.keysym.sym == CCFG::keyIDD)
+        {
             keyDPressed = true;
-            if(!keyAPressed) {
+            if(!keyAPressed)
+            {
                 firstDir = true;
             }
         }
-        if(mainEvent->key.keysym.sym == CCFG::keyIDS) {
-            if(!keyS) {
+        if(mainEvent->key.keysym.sym == CCFG::keyIDS)
+        {
+            if(!keyS)
+            {
                 keyS = true;
                 if(!oMap->getUnderWater() && !oMap->getPlayer()->getInLevelAnimation()) oMap->getPlayer()->setSquat(true);
             }
         }
-        if(mainEvent->key.keysym.sym == CCFG::keyIDA) {
+        if(mainEvent->key.keysym.sym == CCFG::keyIDA)
+        {
             keyAPressed = true;
-            if(!keyDPressed) {
+            if(!keyDPressed)
+            {
                 firstDir = false;
             }
         }
-        if(mainEvent->key.keysym.sym == CCFG::keyIDSpace) {
-            if(!CCFG::keySpace) {
+        if(mainEvent->key.keysym.sym == CCFG::keyIDSpace)
+        {
+            if(!CCFG::keySpace)
+            {
                 oMap->getPlayer()->jump();
                 CCFG::keySpace = true;
             }
         }
-        if(mainEvent->key.keysym.sym == CCFG::keyIDShift) {
-            if(!keyShift) {
+        if(mainEvent->key.keysym.sym == CCFG::keyIDShift)
+        {
+            if(!keyShift)
+            {
                 oMap->getPlayer()->startRun();
                 keyShift = true;
             }
         }
-        switch(mainEvent->key.keysym.sym) {
+        switch(mainEvent->key.keysym.sym)
+        {
             case SDLK_KP_ENTER: case SDLK_RETURN:
-                if(!keyMenuPressed) {
+                if(!keyMenuPressed)
+                {
                     CCFG::getMM()->enter();
                     keyMenuPressed = true;
                 }
             case SDLK_ESCAPE:
-                if(!keyMenuPressed && CCFG::getMM()->getViewID() == CCFG::getMM()->eGame) {
+                if(!keyMenuPressed && CCFG::getMM()->getViewID() == CCFG::getMM()->eGame)
+                {
                     CCFG::getMM()->resetActiveOptionID(CCFG::getMM()->ePasue);
                     CCFG::getMM()->setViewID(CCFG::getMM()->ePasue);
                     CCFG::getMusic()->PlayChunk(CCFG::getMusic()->cPASUE);
@@ -3027,23 +3065,32 @@ void CCore::InputPlayer() {
                 break;
         }
     }
-    if(keyAPressed) {
-        if(!oMap->getPlayer()->getMove() && firstDir == false && !oMap->getPlayer()->getChangeMoveDirection() && !oMap->getPlayer()->getSquat()) {
+    if(keyAPressed)
+    {
+        if(!oMap->getPlayer()->getMove() && firstDir == false && !oMap->getPlayer()->getChangeMoveDirection() && !oMap->getPlayer()->getSquat())
+        {
             oMap->getPlayer()->startMove();
             oMap->getPlayer()->setMoveDirection(false);
-        } else if(!keyDPressed && oMap->getPlayer()->getMoveSpeed() > 0 && firstDir != oMap->getPlayer()->getMoveDirection()) {
+        }
+    else if(!keyDPressed && oMap->getPlayer()->getMoveSpeed() > 0 && firstDir != oMap->getPlayer()->getMoveDirection())
+        {
             oMap->getPlayer()->setChangeMoveDirection();
         }
     }
-    if(keyDPressed) {
-        if(!oMap->getPlayer()->getMove() && firstDir == true && !oMap->getPlayer()->getChangeMoveDirection() && !oMap->getPlayer()->getSquat()) {
+    if(keyDPressed)
+    {
+        if(!oMap->getPlayer()->getMove() && firstDir == true && !oMap->getPlayer()->getChangeMoveDirection() && !oMap->getPlayer()->getSquat())
+        {
             oMap->getPlayer()->startMove();
             oMap->getPlayer()->setMoveDirection(true);
-        } else if(!keyAPressed && oMap->getPlayer()->getMoveSpeed() > 0 && firstDir != oMap->getPlayer()->getMoveDirection()) {
+        }
+    else if(!keyAPressed && oMap->getPlayer()->getMoveSpeed() > 0 && firstDir != oMap->getPlayer()->getMoveDirection())
+        {
             oMap->getPlayer()->setChangeMoveDirection();
         }
     }
-    if(oMap->getPlayer()->getMove() && !keyAPressed && !keyDPressed) {
+    if(oMap->getPlayer()->getMove() && !keyAPressed && !keyDPressed)
+    {
         oMap->getPlayer()->resetMove();
     }
 }
@@ -3093,24 +3140,23 @@ void Event::Draw(SDL_Renderer* rR)
     }
 }
 
-void Event::Animation() {
-    switch(eventTypeID) {
-        case eNormal: {
-            Normal();
-            break;
+void Event::Animation()
+{
+    switch(eventTypeID)
+    {
+        case eNormal:
+        {
+            Normal(); break;
         }
-        case eEnd: {
-            Normal();
-            end();
-            break;
+        case eEnd:
+        {
+            Normal(); end(); break;
         }
-        case eBossEnd: {
-            Normal();
-            break;
+        case eBossEnd:
+        {
+            Normal(); break;
         }
-        default:
-            Normal();
-            break;
+        default: Normal(); break;
     }
 }
 void Event::Normal() {
@@ -3389,8 +3435,10 @@ void Event::Normal() {
         }
     }
 }
-void Event::end() {
-    if(CCore::getMap()->getFlag() != NULL && CCore::getMap()->getFlag()->iYPos < screen_height - 16 - 3*32 - 4) {
+void Event::end()
+{
+    if(CCore::getMap()->getFlag() != NULL && CCore::getMap()->getFlag()->iYPos < screen_height - 16 - 3*32 - 4)
+    {
         CCore::getMap()->getFlag()->Update();
     }
 }
@@ -16146,21 +16194,29 @@ Vine::Vine(int iXPos, int iYPos, int minionState, int iBlockID) {
 Vine::~Vine(void) {
 }
 
-void Vine::Update(){
-    if(minionState == 0) {
-        if(screen_height + 16 - iY * 32 >= jumpDistance) {
+void Vine::Update()
+{
+    if(minionState == 0)
+    {
+        if(screen_height + 16 - iY * 32 >= jumpDistance)
+        {
             jumpDistance += 2;
             iHitBoxY += 2;
             fYPos -= 2;
         }
-    } else {
-        if(jumpDistance < 256) {
+    }
+
+    else
+    {
+        if(jumpDistance < 256)
+        {
             jumpDistance += 2;
             iHitBoxY += 2;
             fYPos -= 2;
         }
     }
 }
+
 void Vine::Draw(SDL_Renderer* rR, CIMG* iIMG)
 {
     if(jumpDistance < 32)
