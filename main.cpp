@@ -70,22 +70,55 @@ class Vector2
 	}
 };
 
+SDL_Surface *BackgroundImage = NULL;
+
+// carrega arquivos
+void LoadFiles()
+{
+    BackgroundImage = SDL_LoadBMP("fundo.bmp");
+}
+
+// fecha arquivos
+void CloseFiles()
+{
+    SDL_FreeSurface(BackgroundImage);
+}
+
+
+/*
+No SDL2, a tela tem que ser criada com
+a função SDL_GetWindowSurface
+depois de criar a janela
+*/
+
+SDL_Surface* tela = NULL;
+
+// use essa função pra desenhar uma imagem na tela
+void DrawImage(int x, int y, SDL_Surface *image)
+{
+    SDL_Rect mover;
+    mover.x = x;
+    mover.y = y;
+
+    SDL_BlitSurface(image, NULL, tela, &mover);
+}
+
 
 int main(int argc, char *argv[])
 {
 SDL_Init(SDL_INIT_EVERYTHING);
 
-
 // objeto ponteiro de janela
 SDL_Window *janela = NULL;
 
-janela = SDL_CreateWindow("janela", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                          screen_width, screen_height, SDL_WINDOW_SHOWN);
+janela = SDL_CreateWindow("janela", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height, SDL_WINDOW_SHOWN);
 
 
+tela = SDL_GetWindowSurface(janela);
 
 SDL_Event evento;
 bool executando = true;
+LoadFiles();
 
 
 while(executando)
@@ -98,11 +131,13 @@ while(executando)
         }
     }
 
+
+    DrawImage(0,0,BackgroundImage); // essa função vai ser removida depois
     SDL_UpdateWindowSurface(janela); // atualiza a janela
 }
 
 
-
+CloseFiles();
 SDL_DestroyWindow(janela); // destroi a janela
 SDL_Quit();
 return 0;
