@@ -70,57 +70,21 @@ class Vector2
 	}
 };
 
-/*
-essa classe representa uma opção de menu
-essa classe não precisa de dependência
-*/
-
-class MenuOption
-{
-private:
-    string text;
-    int x, y;
-public:
-    MenuOption(string text, int x, int y)
-    {
-        this->text = text;
-        this->x = x;
-        this->y = y;
-    }
-
-
-    ~MenuOption(void)
-    {
-
-    }
-
-    string getText()
-    {
-        return text;
-    }
-
-    void setText(string text)
-    {
-        this->text = text;
-    }
-
-    int getXPos()
-    {
-        return x;
-    }
-
-    int getYPos()
-    {
-        return y;
-    }
-};
-
 
 int main(int argc, char *argv[])
 {
 SDL_Init(SDL_INIT_EVERYTHING);
 
 
+// objeto ponteiro de janela
+SDL_Window *janela = NULL;
+
+janela = SDL_CreateWindow("janela", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                          screen_width, screen_height, SDL_WINDOW_SHOWN);
+
+
+SDL_Delay(3000); // delay
+SDL_DestroyWindow(janela); // destroi a janela
 
 SDL_Quit();
 return 0;
