@@ -1783,7 +1783,7 @@ public:
         this->iFPS = 0;
         this->iNumOfFPS = 0;
         this->lFPSTime = 0;
-        SDL_Init(SDL_INIT_EVERYTHING);
+
         janela = SDL_CreateWindow("Super Mario Bros c++", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screen_width, screen_height, SDL_WINDOW_SHOWN);
 
         if(janela == NULL)
@@ -1822,7 +1822,14 @@ public:
     }
 
 
-    ~CCore(void);
+    ~CCore(void)
+    {
+        delete oMap;
+        delete mainEvent;
+        SDL_DestroyRenderer(rR);
+        SDL_DestroyWindow(janela);
+    }
+
     static bool quitGame;
     void mainLoop();
     void Update();
@@ -2843,13 +2850,7 @@ bool CCore::keyAPressed = false;
 bool CCore::keyDPressed = false;
 
 
-CCore::~CCore(void)
-{
-    delete oMap;
-    delete mainEvent;
-    SDL_DestroyRenderer(rR);
-    SDL_DestroyWindow(janela);
-}
+
 
 void CCore::mainLoop()
 {
@@ -15643,14 +15644,18 @@ unsigned int Player::getCoins() {
 void Player::setCoins(unsigned int iCoins) {
     this->iCoins = iCoins;
 }
-Sprite* Player::getMarioSprite() {
+Sprite* Player::getMarioSprite()
+{
     return sMario[1 + 11 * powerLVL];
 }
-CIMG* Player::getMarioLVLUP() {
+
+CIMG* Player::getMarioLVLUP()
+{
     return tMarioLVLUP;
 }
 
-PlayerFireBall::PlayerFireBall(int iXPos, int iYPos, bool moveDirection) {
+PlayerFireBall::PlayerFireBall(int iXPos, int iYPos, bool moveDirection)
+{
     this->fXPos = (float)iXPos;
     this->fYPos = (float)iYPos;
     this->moveDirection = moveDirection;
@@ -15664,7 +15669,9 @@ PlayerFireBall::PlayerFireBall(int iXPos, int iYPos, bool moveDirection) {
     this->bDestroy = false;
     this->destroyFrameID = 15;
 }
-PlayerFireBall::~PlayerFireBall(void) {
+
+PlayerFireBall::~PlayerFireBall(void)
+{
 }
 
 void PlayerFireBall::Update() {
@@ -15755,7 +15762,8 @@ void PlayerFireBall::setMinionState(int minionState) {
 }
 
 
-Points::Points(int iXPos, int iYPos, string sText) {
+Points::Points(int iXPos, int iYPos, string sText)
+{
     this->iXPos = iXPos;
     this->iYPos = iYPos;
     this->sText = sText;
@@ -15902,9 +15910,11 @@ void Spring::Update() {
         }
     }
 }
-void Spring::Draw(SDL_Renderer* rR, CIMG* iIMG) {
+void Spring::Draw(SDL_Renderer* rR, CIMG* iIMG)
+{
     iIMG->Draw(rR, (int)fXPos + (int)CCore::getMap()->getXPos(), (int)fYPos, false);
 }
+
 void Spring::minionPhysics() { }
 
 void Spring::collisionWithPlayer(bool TOP) {
@@ -15930,7 +15940,8 @@ void Spring::setMinionState(int minionState) { }
 
 
 
-Squid::Squid(int iXPos, int iYPos) {
+Squid::Squid(int iXPos, int iYPos)
+{
     this->fXPos = (float)iXPos;
     this->fYPos = (float)iYPos;
     this->iHitBoxX = 32;
@@ -15943,7 +15954,9 @@ Squid::Squid(int iXPos, int iYPos) {
     this->collisionOnlyWithPlayer = true;
     srand((unsigned)time(NULL));
 }
-Squid::~Squid(void) {
+
+Squid::~Squid(void)
+{
 }
 
 void Squid::Update() {
@@ -15984,12 +15997,15 @@ void Squid::Draw(SDL_Renderer* rR, CIMG* iIMG)
 }
 void Squid::minionPhysics() { }
 
-void Squid::collisionWithPlayer(bool TOP) {
+void Squid::collisionWithPlayer(bool TOP)
+{
     CCore::getMap()->playerDeath(true, false);
 }
+
 void Squid::changeBlockID()
 {
-    switch(iBlockID) {
+    switch(iBlockID)
+    {
         case 28:
             this->iBlockID = 29;
             this->iHitBoxY = 28;
@@ -16074,8 +16090,10 @@ void Star::Draw(SDL_Renderer* rR, CIMG* iIMG)
     }
 }
 
-void Star::collisionWithPlayer(bool TOP) {
-    if(!inSpawnState) {
+void Star::collisionWithPlayer(bool TOP)
+{
+    if(!inSpawnState)
+    {
         CCore::getMap()->getPlayer()->setStarEffect(true);
         minionState = -1;
     }
@@ -16084,7 +16102,8 @@ void Star::setMinionState(int minionState) { }
 
 
 
-Toad::Toad(int iXPos, int iYPos, bool peach) {
+Toad::Toad(int iXPos, int iYPos, bool peach)
+{
     this->fXPos = (float)iXPos;
     this->fYPos = (float)iYPos;
     this->moveSpeed = 0;
@@ -16094,19 +16113,24 @@ Toad::Toad(int iXPos, int iYPos, bool peach) {
     this->iHitBoxX = 32;
     this->iHitBoxY = 48;
 }
-Toad::~Toad(void) {
+
+Toad::~Toad(void)
+{
 }
 
 void Toad::Update() { }
 void Toad::minionPhysics() { }
-void Toad::Draw(SDL_Renderer* rR, CIMG* iIMG) {
+
+void Toad::Draw(SDL_Renderer* rR, CIMG* iIMG)
+{
     iIMG->Draw(rR,(int)(fXPos + CCore::getMap()->getXPos()), (int)fYPos, !moveDirection);
 }
 
 void Toad::collisionWithPlayer(bool TOP) { }
 void Toad::setMinionState(int minionState) { }
 
-UpFire::UpFire(int iXPos, int iYJump) {
+UpFire::UpFire(int iXPos, int iYJump)
+{
     this->fXPos = (float)iXPos;
     this->fYPos = (float)screen_height + 16;
     this->moveDirection = true;
@@ -16117,6 +16141,7 @@ UpFire::UpFire(int iXPos, int iYJump) {
     this->iBlockID = 32;
     srand((unsigned)time(NULL));
 }
+
 UpFire::~UpFire(void) {
 }
 
@@ -16164,20 +16189,27 @@ void UpFire::Update() {
         --nextJumpFrameID;
     }
 }
-void UpFire::Draw(SDL_Renderer* rR, CIMG* iIMG) {
-    if(moveDirection) {
+void UpFire::Draw(SDL_Renderer* rR, CIMG* iIMG)
+{
+    if(moveDirection)
+    {
         iIMG->Draw(rR, (int)fXPos + (int)CCore::getMap()->getXPos(), (int)fYPos, false);
-    } else {
+    }
+
+    else
+    {
         iIMG->DrawVert(rR, (int)fXPos + (int)CCore::getMap()->getXPos(), (int)fYPos);
     }
 }
 void UpFire::minionPhysics() { }
-void UpFire::collisionWithPlayer(bool TOP) {
+void UpFire::collisionWithPlayer(bool TOP)
+{
     CCore::getMap()->playerDeath(true, false);
 }
 
 
-Vine::Vine(int iXPos, int iYPos, int minionState, int iBlockID) {
+Vine::Vine(int iXPos, int iYPos, int minionState, int iBlockID)
+{
     this->fXPos = (float)iXPos*32 + 4;
     this->fYPos = (float)(screen_height - 16 - iYPos*32);
     this->iX = iXPos;
@@ -16191,7 +16223,9 @@ Vine::Vine(int iXPos, int iYPos, int minionState, int iBlockID) {
     this->iHitBoxX = 24;
     this->iHitBoxY = -32;
 }
-Vine::~Vine(void) {
+
+Vine::~Vine(void)
+{
 }
 
 void Vine::Update()
@@ -16313,7 +16347,8 @@ void Vine::collisionWithPlayer(bool TOP)
         }
         CCore::getMap()->getEvent()->vOLDDir.push_back(CCore::getMap()->getEvent()->eNOTHING);
         CCore::getMap()->getEvent()->vOLDLength.push_back(60);
-        for(int i = 0; i < 64; i += 32) {
+        for(int i = 0; i < 64; i = i+32)
+        {
             CCore::getMap()->getEvent()->vNEWDir.push_back(CCore::getMap()->getEvent()->eVINE1);
             CCore::getMap()->getEvent()->vNEWLength.push_back(16);
             CCore::getMap()->getEvent()->vNEWDir.push_back(CCore::getMap()->getEvent()->eVINE2);
@@ -16326,9 +16361,11 @@ void Vine::collisionWithPlayer(bool TOP)
 
 int main(int argc, char *argv[])
 {
+SDL_Init(SDL_INIT_EVERYTHING);
 
-    CCore oCore;
-    oCore.mainLoop();
+CCore oCore;
+oCore.mainLoop();
 
-    return 0;
+SDL_Quit();
+return 0;
 }
