@@ -11,6 +11,8 @@
 #include <math.h>
 
 
+bool executando = true; // essa variável controla o game loop
+
 using namespace std;
 
 
@@ -1779,7 +1781,6 @@ public:
 
     CCore(void)
     {
-        this->quitGame = false;
         this->iFPS = 0;
         this->iNumOfFPS = 0;
         this->lFPSTime = 0;
@@ -1788,7 +1789,7 @@ public:
 
         if(janela == NULL)
         {
-            quitGame = true;
+            executando = false;
         }
 
         rR = SDL_CreateRenderer(janela, -1, SDL_RENDERER_ACCELERATED);
@@ -1830,7 +1831,7 @@ public:
         SDL_DestroyWindow(janela);
     }
 
-    static bool quitGame;
+
     void mainLoop();
     void Update();
     void Draw();
@@ -2838,7 +2839,6 @@ bool CCore::mouseLeftPressed = false;
 bool CCore::mouseRightPressed = false;
 int CCore::mouseX = 0;
 int CCore::mouseY = 0;
-bool CCore::quitGame = false;
 bool CCore::movePressed = false;
 bool CCore::keyMenuPressed = false;
 bool CCore::keyS = false;
@@ -2855,7 +2855,7 @@ bool CCore::keyDPressed = false;
 void CCore::mainLoop()
 {
     lFPSTime = SDL_GetTicks();
-    while(!quitGame && mainEvent->type != SDL_QUIT) //!quitGame && mainEvent->type != SDL_QUIT
+    while(executando && mainEvent->type != SDL_QUIT) //!quitGame && mainEvent->type != SDL_QUIT
     {
         frameTime = SDL_GetTicks();
         SDL_PollEvent(mainEvent);
@@ -14155,9 +14155,7 @@ void PauseMenu::enter() {
             CCore::getMap()->resetGameData();
             CCFG::getMM()->setViewID(CCFG::getMM()->eMainMenu);
             break;
-        case 3:
-            CCore::quitGame = true;
-            break;
+        case 3: executando = false; break;
     }
 }
 void PauseMenu::escape() {
@@ -14183,7 +14181,8 @@ Pipe::Pipe(int iType, int iLX, int iLY, int iRX, int iRY, int newPlayerPosX, int
     this->iDelay = iDelay;
     this->iSpeed = iSpeed;
 }
-Pipe::~Pipe(void) {
+Pipe::~Pipe(void)
+{
 }
 
 void Pipe::checkUse() {
