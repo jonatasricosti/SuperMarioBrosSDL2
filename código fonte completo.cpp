@@ -1959,96 +1959,39 @@ void AboutMenu::reset() {
     CCore::getMap()->loadLVL();
 }
 
-void AboutMenu::nextColor() {
+// fica mudando de cor no menu
+void AboutMenu::nextColor()
+{
     int iN = iColorID;
-    while(iN == iColorID) {
+    while(iN == iColorID)
+    {
         iColorID = rand() % 16;
     }
     ++iColorID;
-    switch (iColorID) {
-        case 0:
-            nR = 73;
-            nG = 133;
-            nB = 203;
-            break;
-        case 1:
-            nR = 197;
-            nG = 197;
-            nB = 223;
-            break;
-        case 2:
-            nR = 27;
-            nG = 60;
-            nB = 173;
-            break;
-        case 3:
-            nR = 6;
-            nG = 21;
-            nB = 86;
-            break;
-        case 4:
-            nR = 183;
-            nG = 85;
-            nB = 76;
-            break;
-        case 5:
-            nR = 110;
-            nG = 58;
-            nB = 70;
-            break;
-        case 6:
-            nR = 55;
-            nG = 19;
-            nB = 63;
-            break;
-        case 7:
-            nR = 115;
-            nG = 53;
-            nB = 126;
-            break;
-        case 8:
-            nR = 227;
-            nG = 200;
-            nB = 0;
-            break;
-        case 9:
-            nR = 255;
-            nG = 180;
-            nB = 2;
-            break;
-        case 10:
-            nR = 231;
-            nG = 51;
-            nB = 24;
-            break;
-        case 11:
-            nR = 255;
-            nG = 180;
-            nB = 2;
-            break;
-        case 12:
-            nR = 4;
-            nG = 2;
-            nB = 15;
-            break;
-        case 13:
-            nR = 135;
-            nG = 178;
-            nB = 168;
-            break;
-        case 14:
-            nR = 64;
-            nG = 43;
-            nB = 24;
-            break;
-        case 15:
-            nR = rand() % 255;
-            nG = rand() % 255;
-            nB = rand() % 255;
-            break;
+
+    switch (iColorID)
+    {
+        case 0:  nR = 73;   nG = 133; nB = 203; break;
+        case 1:  nR = 197;  nG = 197; nB = 223; break;
+        case 2:  nR = 27;   nG = 60;  nB = 173; break;
+        case 3:  nR = 6;    nG = 21;  nB = 86;  break;
+        case 4:  nR = 183;  nG = 85;  nB = 76;  break;
+        case 5:  nR = 110;  nG = 58;  nB = 70;  break;
+        case 6:  nR = 55;   nG = 19;  nB = 63;  break;
+        case 7:  nR = 115;  nG = 53;  nB = 126; break;
+        case 8:  nR = 227;  nG = 200; nB = 0;   break;
+        case 9:  nR = 255;  nG = 180; nB = 2;   break;
+        case 10: nR = 231;  nG = 51;  nB = 24;  break;
+        case 11: nR = 255;  nG = 180; nB = 2;   break;
+        case 12: nR = 4;    nG = 2;   nB = 15;  break;
+        case 13: nR = 135;  nG = 178; nB = 168; break;
+        case 14: nR = 64;   nG = 43;  nB = 24;  break;
+        case 15: nR = rand() % 255;   nG = rand() % 255; nB = rand() % 255; break;
     }
 }
-int AboutMenu::getColorStep(int iOld, int iNew) {
+
+int AboutMenu::getColorStep(int iOld, int iNew)
+{
     return iOld + (iOld > iNew ? (iNew - iOld) * colorStepID / 30 : (iNew - iOld) * colorStepID / 30);
 }
 
@@ -16033,36 +15976,57 @@ Star::Star(int iXPos, int iYPos, int iX, int iY)
     this->iHitBoxX = 28;
     this->iHitBoxY = 32;
 }
-Star::~Star(void) {
+
+Star::~Star(void)
+{
 }
 
-void Star::Update() {
-    if (inSpawnState) {
-        if (inSpawnY <= 0) {
+void Star::Update()
+{
+    if (inSpawnState)
+    {
+        if (inSpawnY <= 0)
+        {
             inSpawnState = false;
-        } else {
-            if (fYPos > -5) {
+        }
+
+        else
+        {
+            if (fYPos > -5)
+            {
                 inSpawnY -= 2;
                 fYPos -= 2;
-            } else {
+            }
+
+            else
+            {
                 inSpawnY -= 1;
                 fYPos -= 1;
             }
         }
-    } else {
-        if(jumpState == 0) {
+    }
+
+    else
+    {
+        if(jumpState == 0)
+        {
             startJump(1);
             jumpDistance = 32;
         }
+
         updateXPos();
     }
 }
-bool Star::updateMinion() {
-    if (!inSpawnState) {
+
+bool Star::updateMinion()
+{
+    if (!inSpawnState)
+    {
         minionPhysics();
     }
     return minionSpawned;
 }
+
 void Star::minionPhysics() {
     if (jumpState == 1) {
         if(minionState == 0) {
@@ -16141,53 +16105,88 @@ UpFire::UpFire(int iXPos, int iYJump)
     srand((unsigned)time(NULL));
 }
 
-UpFire::~UpFire(void) {
+UpFire::~UpFire(void)
+{
 }
 
-void UpFire::Update() {
-    if(nextJumpFrameID <= 0) {
-        if(moveDirection) {
-            if(jumpDistance < 32) {
+void UpFire::Update()
+{
+    if(nextJumpFrameID <= 0)
+    {
+        if(moveDirection)
+        {
+            if(jumpDistance < 32)
+            {
                 fYPos -= 2;
                 jumpDistance -= 2;
-            } else if(jumpDistance < 2*32) {
+            }
+
+            else if(jumpDistance < 2*32)
+            {
                 fYPos -= 4;
                 jumpDistance -= 4;
-            } else if(jumpDistance < 4*32) {
+            }
+
+            else if(jumpDistance < 4*32)
+            {
                 fYPos -= 5;
                 jumpDistance -= 5;
-            } else {
+            }
+
+            else
+            {
                 fYPos -= 6;
                 jumpDistance -= 6;
             }
-            if(jumpDistance <= 0) {
+
+            if(jumpDistance <= 0)
+            {
                 moveDirection = !moveDirection;
                 jumpDistance = (float)iYJump;
             }
-        } else {
-            if(jumpDistance > iYJump - 32) {
+        }
+
+        else
+        {
+            if(jumpDistance > iYJump - 32)
+            {
                 fYPos += 2;
                 jumpDistance -= 2;
-            } else if(jumpDistance > iYJump - 2*32) {
+            }
+
+            else if(jumpDistance > iYJump - 2*32)
+            {
                 fYPos += 4;
                 jumpDistance -= 4;
-            } else if(jumpDistance > iYJump - 4*32) {
+            }
+
+            else if(jumpDistance > iYJump - 4*32)
+            {
                 fYPos += 5;
                 jumpDistance -= 5;
-            }  else {
+            }
+
+            else
+            {
                 fYPos += 6;
                 jumpDistance -= 6;
             }
-            if(jumpDistance <= 0) {
+
+            if(jumpDistance <= 0)
+            {
                 moveDirection = !moveDirection;
                 jumpDistance = (float)iYJump;
                 nextJumpFrameID = 25 + rand()%355;
             }
         }
-    } else {
+    }
+
+    else
+    {
         --nextJumpFrameID;
     }
 }
+
 void UpFire::Draw(SDL_Renderer* rR, CIMG* iIMG)
 {
     if(moveDirection)
