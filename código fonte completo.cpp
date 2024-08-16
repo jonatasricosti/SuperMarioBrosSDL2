@@ -19,6 +19,8 @@ using namespace std;
 const int screen_width = 800;
 const int screen_height = 448;
 
+SDL_Event evento;
+
 // use essa função pra converter int pra string
 template <typename T>
 string ToString(T val)
@@ -1754,12 +1756,13 @@ public:
     bool getInEvent();
     void setInEvent(bool inEvent);
 };
+
+
 class CCore
 {
 private:
     SDL_Window* janela;
     SDL_Renderer* rR;
-    SDL_Event* mainEvent;
     // ----- FPS -----
     long frameTime;
     static const int MIN_FRAME_TIME = 16;
@@ -1774,7 +1777,24 @@ private:
     // ----- INPUT
     static Map* oMap;
     // ----- Methods
-    void Input();
+    void Input()
+    {
+        switch(CCFG::getMM()->getViewID())
+        {
+            case 2: case 7:
+                if(!oMap->getInEvent())
+                {
+                    InputPlayer();
+                }
+                else
+                {
+                    resetMove();
+                }
+                break;
+            default: InputMenu(); break;
+        }
+    }
+
     void InputPlayer();
     void InputMenu();
 public:
@@ -1798,7 +1818,7 @@ public:
         SDL_SetColorKey(loadedSurface, SDL_TRUE, 0xff00ff);
         SDL_SetWindowIcon(janela, loadedSurface);
         SDL_FreeSurface(loadedSurface);
-        mainEvent = new SDL_Event();
+
         // ----- ICO
         Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
         oMap = new Map(rR);
@@ -1826,7 +1846,6 @@ public:
     ~CCore(void)
     {
         delete oMap;
-        delete mainEvent;
         SDL_DestroyRenderer(rR);
         SDL_DestroyWindow(janela);
     }
@@ -2798,10 +2817,12 @@ bool CCore::keyDPressed = false;
 void CCore::mainLoop()
 {
     lFPSTime = SDL_GetTicks();
-    while(executando && mainEvent->type != SDL_QUIT) //!quitGame && mainEvent->type != SDL_QUIT
+
+    // game loop
+    while(executando && evento.type != SDL_QUIT)
     {
         frameTime = SDL_GetTicks();
-        SDL_PollEvent(mainEvent);
+        SDL_PollEvent(&evento);
         SDL_RenderClear(rR);
         CCFG::getMM()->setBackgroundColor(rR);
         SDL_RenderFillRect(rR, NULL);
@@ -2822,27 +2843,14 @@ void CCore::mainLoop()
         }
     }
 }
-void CCore::Input()
+
+void CCore::InputMenu()
 {
-    switch(CCFG::getMM()->getViewID())
+    if(evento.type == SDL_KEYDOWN)
     {
-        case 2: case 7:
-            if(!oMap->getInEvent())
-            {
-                InputPlayer();
-            }
-            else
-            {
-                resetMove();
-            }
-            break;
-        default: InputMenu(); break;
-    }
-}
-void CCore::InputMenu() {
-    if(mainEvent->type == SDL_KEYDOWN) {
-        CCFG::getMM()->setKey(mainEvent->key.keysym.sym);
-        switch(mainEvent->key.keysym.sym) {
+        CCFG::getMM()->setKey(evento.key.keysym.sym);
+        switch(evento.key.keysym.sym)
+        {
             case SDLK_s: case SDLK_DOWN:
                 if(!keyMenuPressed) {
                     CCFG::getMM()->keyPressed(2);
@@ -2881,8 +2889,10 @@ void CCore::InputMenu() {
                 break;
         }
     }
-    if(mainEvent->type == SDL_KEYUP) {
-        switch(mainEvent->key.keysym.sym) {
+    if(evento.type == SDL_KEYUP)
+    {
+        switch(evento.key.keysym.sym)
+        {
             case SDLK_s: case SDLK_DOWN: case SDLK_w: case SDLK_UP: case SDLK_KP_ENTER: case SDLK_RETURN: case SDLK_ESCAPE: case SDLK_a: case SDLK_RIGHT: case SDLK_LEFT: case SDLK_d:
                 keyMenuPressed = false;
                 break;
@@ -2893,9 +2903,9 @@ void CCore::InputMenu() {
 }
 void CCore::InputPlayer()
 {
-    if(mainEvent->type == SDL_WINDOWEVENT)
+    if(evento.type == SDL_WINDOWEVENT)
     {
-        switch(mainEvent->window.event)
+        switch(evento.window.event)
         {
             case SDL_WINDOWEVENT_FOCUS_LOST:
                 CCFG::getMM()->resetActiveOptionID(CCFG::getMM()->ePasue);
@@ -2905,9 +2915,9 @@ void CCore::InputPlayer()
                 break;
         }
     }
-    if(mainEvent->type == SDL_KEYUP)
+    if(evento.type == SDL_KEYUP)
     {
-        if(mainEvent->key.keysym.sym == CCFG::keyIDD)
+        if(evento.key.keysym.sym == CCFG::keyIDD)
         {
                 if(firstDir)
                 {
@@ -2915,12 +2925,12 @@ void CCore::InputPlayer()
                 }
                 keyDPressed = false;
             }
-            if(mainEvent->key.keysym.sym == CCFG::keyIDS)
+            if(evento.key.keysym.sym == CCFG::keyIDS)
             {
                 oMap->getPlayer()->setSquat(false);
                 keyS = false;
             }
-            if(mainEvent->key.keysym.sym == CCFG::keyIDA)
+            if(evento.key.keysym.sym == CCFG::keyIDA)
             {
                 if(!firstDir)
                 {
@@ -2928,11 +2938,11 @@ void CCore::InputPlayer()
                 }
                 keyAPressed = false;
             }
-            if(mainEvent->key.keysym.sym == CCFG::keyIDSpace)
+            if(evento.key.keysym.sym == CCFG::keyIDSpace)
             {
                 CCFG::keySpace = false;
             }
-            if(mainEvent->key.keysym.sym == CCFG::keyIDShift)
+            if(evento.key.keysym.sym == CCFG::keyIDShift)
             {
                 if(keyShift)
                 {
@@ -2940,16 +2950,16 @@ void CCore::InputPlayer()
                     keyShift = false;
                 }
             }
-        switch(mainEvent->key.keysym.sym)
+        switch(evento.key.keysym.sym)
         {
             case SDLK_KP_ENTER: case SDLK_RETURN: case SDLK_ESCAPE:
                 keyMenuPressed = false;
                 break;
         }
     }
-    if(mainEvent->type == SDL_KEYDOWN)
+    if(evento.type == SDL_KEYDOWN)
     {
-        if(mainEvent->key.keysym.sym == CCFG::keyIDD)
+        if(evento.key.keysym.sym == CCFG::keyIDD)
         {
             keyDPressed = true;
             if(!keyAPressed)
@@ -2957,7 +2967,7 @@ void CCore::InputPlayer()
                 firstDir = true;
             }
         }
-        if(mainEvent->key.keysym.sym == CCFG::keyIDS)
+        if(evento.key.keysym.sym == CCFG::keyIDS)
         {
             if(!keyS)
             {
@@ -2965,7 +2975,7 @@ void CCore::InputPlayer()
                 if(!oMap->getUnderWater() && !oMap->getPlayer()->getInLevelAnimation()) oMap->getPlayer()->setSquat(true);
             }
         }
-        if(mainEvent->key.keysym.sym == CCFG::keyIDA)
+        if(evento.key.keysym.sym == CCFG::keyIDA)
         {
             keyAPressed = true;
             if(!keyDPressed)
@@ -2973,7 +2983,7 @@ void CCore::InputPlayer()
                 firstDir = false;
             }
         }
-        if(mainEvent->key.keysym.sym == CCFG::keyIDSpace)
+        if(evento.key.keysym.sym == CCFG::keyIDSpace)
         {
             if(!CCFG::keySpace)
             {
@@ -2981,7 +2991,7 @@ void CCore::InputPlayer()
                 CCFG::keySpace = true;
             }
         }
-        if(mainEvent->key.keysym.sym == CCFG::keyIDShift)
+        if(evento.key.keysym.sym == CCFG::keyIDShift)
         {
             if(!keyShift)
             {
@@ -2989,7 +2999,7 @@ void CCore::InputPlayer()
                 keyShift = true;
             }
         }
-        switch(mainEvent->key.keysym.sym)
+        switch(evento.key.keysym.sym)
         {
             case SDLK_KP_ENTER: case SDLK_RETURN:
                 if(!keyMenuPressed)
